@@ -481,6 +481,10 @@ spawn-fcgi -p 8080 ./serv
 
 Файл уже скопирован, но настройки этого файла не были применены, поэтому перезагружаю **nginx**
 
+```bash
+nginx -s reload
+```
+
 <img src="./photos/Part_3/point_2/nginx_reload.png" alt="nginx reload" width="400"/>
 
 Hello World! должно выводиться на порту 81
@@ -507,6 +511,15 @@ Hello World! должно выводиться на порту 81
 
 *При написании докер-образа избегай множественных вызовов команд RUN*
 
+https://habr.com/ru/companies/ruvds/articles/439980/
+
+https://stackoverflow.com/questions/77980040/modify-nginx-base-image-with-a-dockerfile
+
+<img src="./photos/Part_4/point_0/docker_instructions.png" alt="инсттрукции dockerfile" width="400"/>
+
+
+
+
 #### Напиши свой докер-образ, который:
 ##### 1) собирает исходники мини сервера на FastCgi из [Части 3](#part-3-мини-веб-сервер);
 ##### 2) запускает его на 8080 порту;
@@ -514,10 +527,61 @@ Hello World! должно выводиться на порту 81
 ##### 4) запускает **nginx**.
 _**nginx** можно установить внутрь докера самостоятельно, а можно воспользоваться готовым образом с **nginx**'ом, как базовым._
 
+
+1. Создала Dockerfile: 
+    - задала родительский образ
+    - cкопировала все необходимые файлы
+    - дала права для скрипта settings.sh
+
+<img src="./photos/Part_4/point_1/dockerfile.png" alt=" dockerfile" width="400"/>
+
+2.  Создала скрипт settings.sh: 
+    - установила все настройки:
+      - nginx
+      - gcc
+      - spawn-fcgi
+      - libfcgi-dev
+      - net-tools (при возможных ошибках позволяет посмотреть, какие порты слушаются)
+    - скомпилировала serv.c с флагом -lfcgi
+    - запустила на  8080 порту
+    - запустила nginx
+
+<img src="./photos/Part_4/point_1/settings_sh.png" alt=" settings sh" width="400"/>
+
 ##### Собери написанный докер-образ через `docker build` при этом указав имя и тег.
+
+**Чтобы у меня получилось собрать образ, пришлось зарегестрироваться на docker hub** 
+**`https://hub.docker.com/`** 
+
+**После регистрации зашла через команду в терминале `docker login`, где ввела свой логин и пароль с docker hub**
+
+```bash
+docker build -t kristofs . 
+```
+<img src="./photos/Part_4/point_1/docker_build.png" alt=" dokcer build " width="600"/>
+
+
 ##### Проверь через `docker images`, что все собралось корректно.
+
+<img src="./photos/Part_4/point_1/docker_images.png" alt=" docker images " width="600"/>
+
 ##### Запусти собранный докер-образ с маппингом 81 порта на 80 на локальной машине и маппингом папки *./nginx* внутрь контейнера по адресу, где лежат конфигурационные файлы **nginx**'а (см. [Часть 2](#part-2-операции-с-контейнером)).
+
+```bash
+docker run -d -p 80:81 -v ./nginx.conf:/etc/nginx/nginx.conf kristofs
+```
+Запускаю контейнер и смотрю итог через  `docker ps`
+
+<img src="./photos/Part_4/point_1/docker_run.png" alt=" docker images " width="600"/>
+
+
+
+
+
+
 ##### Проверь, что по localhost:80 доступна страничка написанного мини сервера.
+
+
 ##### Допиши в *./nginx/nginx.conf* проксирование странички */status*, по которой надо отдавать статус сервера **nginx**.
 ##### Перезапусти докер-образ.
 *Если всё сделано верно, то, после сохранения файла и перезапуска контейнера, конфигурационный файл внутри докер-образа должен обновиться самостоятельно без лишних действий*.
