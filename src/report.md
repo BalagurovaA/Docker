@@ -677,6 +677,15 @@ dockle --input kristofs.tar
 
 **== Задание ==**
 
+Чтобы была возможность запустить Docker Compose, его нужно сначала скачать \
+Cкачиваю через команду: 
+
+```Bash
+brew install docker-compose
+```
+<img src="./photos/Part_6/point_0/homebrew_install.png" alt=" errors to dockle " width="800"/> 
+<img src="./photos/Part_6/point_0/docker_compose_version.png" alt=" errors to dockle " width="400"/> 
+
 ##### Напиши файл *docker-compose.yml*, с помощью которого:
 ##### 1) Подними докер-контейнер из [Части 5](#part-5-инструмент-dockle) _(он должен работать в локальной сети, т. е. не нужно использовать инструкцию **EXPOSE** и мапить порты на локальную машину)_.
 ##### 2) Подними докер-контейнер с **nginx**, который будет проксировать все запросы с 8080 порта на 81 порт первого контейнера.
