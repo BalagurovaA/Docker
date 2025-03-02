@@ -5,22 +5,28 @@ services:
     image: kristofs:latest
     build: ./../Part_5_Dockle
     container_name: kris
-    networks:
-      - local_network
-    expose:
-      - "81"
 
   image_nginx:
     image: nginx:latest
     container_name: nginx_kris
     ports:
-      - "8080:80"
-    networks:
-      - local_network
+      - "80:8080"
     depends_on:
       - part5
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf 
-networks:
-    local_network:
-      driver: bridge
+
+
+# services:
+#   my_images_part5:
+#     build: ../part_5
+#     container_name: my_container
+#   nginx:
+#     image: nginx:latest
+#     container_name: nginx_container
+#     depends_on: 
+#       - my_images_part5
+#     volumes: 
+#       - ./nginx.conf:/etc/nginx/nginx.conf
+#     ports:
+#       - "80:8080"
