@@ -3,7 +3,7 @@ services:
     container_name: FIRST
     build: ./../Part_5_Dockle
 
-  proxy:
+  part_6:
     image: nginx:latest
     container_name: SECOND
     volumes:

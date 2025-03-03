@@ -33,14 +33,4 @@ CMD curl -f http://localhost:80 || exit 1
 
 USER nginx
 
-
 CMD sh -c "./settings.sh && nginx -g 'daemon off;'"
-
-
-# Инструкция Dockerfile, которая позволяет определить, как Docker должен проверять, что контейнер работает корректно. 
-# Она полезна для автоматического мониторинга состояния контейнера и автоматического восстановления .
-
-# docker build -t kristofs . 
-
-# export DOCKLE_ACCEPT_KEYS=NGINX_GPGKEYS,NGINX_GPGKEY_PATH
-# dockle --input kristofs.tar
