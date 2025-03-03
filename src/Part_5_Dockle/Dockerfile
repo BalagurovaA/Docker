@@ -4,28 +4,43 @@ FROM nginx
 # - settings.sh - bash-скрипт, чтобы установить все настройки и не вводить вручную
 # - nginx.conf -  конфигурационный файл 
 
-# создала группу пользователей добавила туда пользователя nginx-user
-RUN groupadd -r nginx-user && useradd -r -g nginx-user nginx-user
-
-
 COPY ./serv.c ./
 COPY  ./settings.sh ./
 COPY  ./nginx.conf /etc/nginx/nginx.conf
 
-RUN find /usr/bin usr/sbin/ -type f -exec chmod a-s {} +
+RUN chmod u-s /usr/bin/su \ 
+    /usr/bin/mount \
+    /usr/bin/newgrp \
+    /usr/bin/chsh \
+    /usr/bin/chfn \
+    /usr/bin/gpasswd \
+    /usr/bin/passwd \
+    /usr/bin/umount && \
+    chmod 255 /usr/sbin/unix_chkpwd \
+    /usr/bin/chage \
+    /usr/bin/expiry
 
+RUN touch /var/run/nginx.pid \
+    && chown -R nginx:nginx /etc/nginx/nginx.conf /var/cache/nginx /home \
+    && chown -R nginx:nginx /var/run/nginx.pid \
+    && rm -rf /var/lib/apt/lists/*
 
-# дала права пользователю nginx-user права для папок, связанных с nginx
-# Команда chown дает файлу нового владельца
-RUN chmod +x settings.sh && sh settings.sh && chown -R nginx-user:nginx-user /etc/nginx /var/cache/nginx /var/log/nginx
-
-USER nginx-user
+RUN chmod +x settings.sh && sh settings.sh
 RUN sh settings.sh 
+
+HEALTHCHECK --interval=5m --timeout=3s \
+CMD curl -f http://localhost:80 || exit 1
+
+USER nginx
+
 
 CMD sh -c "./settings.sh && nginx -g 'daemon off;'"
 
 
 # Инструкция Dockerfile, которая позволяет определить, как Docker должен проверять, что контейнер работает корректно. 
 # Она полезна для автоматического мониторинга состояния контейнера и автоматического восстановления .
-HEALTHCHECK --interval=5m --timeout=3s \
-CMD curl -f http://localhost:80 || exit 1
+
+# docker build -t kristofs . 
+
+# export DOCKLE_ACCEPT_KEYS=NGINX_GPGKEYS,NGINX_GPGKEY_PATH
+# dockle --input kristofs.tar

@@ -1,32 +1,14 @@
-version: '3.8'
-
 services:
-  part5:
-    image: kristofs:latest
+  part_5:
+    container_name: FIRST
     build: ./../Part_5_Dockle
-    container_name: kris
 
-  image_nginx:
+  proxy:
     image: nginx:latest
-    container_name: nginx_kris
+    container_name: SECOND
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf 
     ports:
       - "80:8080"
     depends_on:
-      - part5
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf 
-
-
-# services:
-#   my_images_part5:
-#     build: ../part_5
-#     container_name: my_container
-#   nginx:
-#     image: nginx:latest
-#     container_name: nginx_container
-#     depends_on: 
-#       - my_images_part5
-#     volumes: 
-#       - ./nginx.conf:/etc/nginx/nginx.conf
-#     ports:
-#       - "80:8080"
+      - part_5
